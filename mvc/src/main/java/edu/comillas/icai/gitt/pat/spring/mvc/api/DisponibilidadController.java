@@ -19,7 +19,10 @@ public class DisponibilidadController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @GetMapping("/availability")
-    public ResponseEntity<?> getAvailabilityByDate(@RequestParam(name = "date", required = false) String date) {
+    public ResponseEntity<?> getAvailabilityByDate(
+            @RequestParam(name = "date", required = false) String date,
+            @RequestParam(name = "courtId", required = false) String courtId)
+    {
         if (date == null || date.isBlank()) {
             return ResponseEntity.badRequest().build(); // 400
         }
@@ -31,7 +34,8 @@ public class DisponibilidadController {
             return ResponseEntity.badRequest().build(); // 400
         }
 
-        // Por ahora devolvemos una lista vacía para que el endpoint exista y pase validación básica.
+        logger.info("Consulta disponibilidad fecha {} courtId {}", localDate, courtId);
+
         return ResponseEntity.ok(List.of());
     }
 
