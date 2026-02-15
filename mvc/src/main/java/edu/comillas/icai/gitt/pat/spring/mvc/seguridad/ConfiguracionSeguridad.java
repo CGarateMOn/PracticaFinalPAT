@@ -23,6 +23,7 @@ public class ConfiguracionSeguridad {
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/pistaPadel/availability").permitAll()
+                        .requestMatchers("/pistaPadel/courts/**/availability").permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults()); // Esto es lo que usa Postman
