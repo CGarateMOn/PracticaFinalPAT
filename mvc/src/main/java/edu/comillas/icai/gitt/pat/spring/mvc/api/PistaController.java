@@ -8,8 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import edu.comillas.icai.gitt.pat.spring.mvc.data.AlmacenDatos;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,11 +22,11 @@ public class PistaController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     // 1. LISTAR PISTAS (GET /pistaPadel/courts)
-    @GetMapping
-    public ResponseEntity<List<Pista>> listarPistas(
-            @RequestParam(required = false) Boolean active) {
+    @GetMapping("/courts")
+    public ResponseEntity<List<Pista>> listarPistas(@RequestParam(required = false) Boolean active) {
         logger.trace("se han listado las pistas, según la solicitud haya sido courts?active=true/false debe haber obtenido las pistas active o inactive ");
-        return ResponseEntity.ok(Arrays.asList());
+        List<Pista> pistas = new ArrayList<>(AlmacenDatos.PISTAS.values());
+        return ResponseEntity.ok(pistas);
     }
 
     // 2. DETALLE DE UNA PISTA (GET /pistaPadel/courts/{courtId})
