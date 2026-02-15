@@ -4,10 +4,7 @@ import edu.comillas.icai.gitt.pat.spring.mvc.records.Disponibilidad;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -17,31 +14,63 @@ import java.util.List;
 @RequestMapping("/pistaPadel")
 public class DisponibilidadController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-/*
+
     @GetMapping("/availability")
-    public ResponseEntity<List<Disponibilidad>> getDisponibilidadGeneral(
-            @RequestParam String date,
-            @RequestParam(required = false) Long courtId){
-            logger.info("Consulta de disponibilidad general: fecha={}, pista={}", date, courtId);
-            //  Validar formato de fecha (Error 400)
-            LocalDate fechaParsed;
-            try {
-                fechaParsed = LocalDate.parse(date);
-            } catch (DateTimeParseException e) {
-                logger.error("Error 400: Fecha mal formateada -> {}", date);
-                return ResponseEntity.badRequest().body("Formato de fecha inválido. Use YYYY-MM-DD");
-            }
+    public ResponseEntity<?> getAvailabilityByDate(
+            @RequestParam(name = "date", required = false) String date,
+            @RequestParam(name = "courtId", required = false) String courtId)
+    {
+        if (date == null || date.isBlank()) {
+            return ResponseEntity.badRequest().build(); // 400
+        }
 
-            // Si pasan un courtId, validar que la pista exista (Error 404)
-            if (courtId != null && !PistatePista(courtId)) {
-                logger.warn("Error 404: La pista {} no existe", courtId);
-                return ResponseEntity.status(404).build();
-            }
+        final LocalDate localDate;
+        try {
+            localDate = LocalDate.parse(date); // espera YYYY-MM-DD
+        } catch (DateTimeParseException ex) {
+            return ResponseEntity.badRequest().build(); // 400
+        }
 
-            // 3. Obtener resultados
-            var disponibilidad = PistaController.consultar(fechaParsed, courtId);
-            return ResponseEntity.ok(disponibilidad);
+        logger.info("Consulta disponibilidad fecha {} courtId {}", localDate, courtId);
+
+        Disponibilidad disponibilidad = new Disponibilidad(
+                courtId,
+                localDate,
+                List.of()
+        );
+
+        return ResponseEntity.ok(disponibilidad);
     }
-*/
+
+    @GetMapping("/courts/{courtId}/availability")
+    public ResponseEntity<?> getCourtAvailability(
+            @PathVariable String courtId,
+            @RequestParam(name = "date", required = false) String date
+    ) {
+        if (date == null || date.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        final LocalDate localDate;
+        try {
+            localDate = LocalDate.parse(date);
+        } catch (DateTimeParseException ex) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // ToDo: aquí más adelante irás a PistaRepository/Service para comprobar existencia real
+        boolean pistaExiste = true; // placeholder por ahora
+
+        if (!pistaExiste) {
+            return ResponseEntity.notFound().build(); // 404
+        }
+
+        logger.info("Disponibilidad pista {} fecha {}", courtId, localDate);
+
+        Disponibilidad disponibilidad = new Disponibilidad(courtId, localDate, List.of());
+        return ResponseEntity.ok(disponibilidad);
+    }
+
+
 }
 

@@ -22,6 +22,8 @@ public class ConfiguracionSeguridad {
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/pistaPadel/**")) // MUY IMPORTANTE: debe coincidir con tu ruta
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/pistaPadel/availability").permitAll()
+                        .requestMatchers("/pistaPadel/courts").permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults()); // Esto es lo que usa Postman
