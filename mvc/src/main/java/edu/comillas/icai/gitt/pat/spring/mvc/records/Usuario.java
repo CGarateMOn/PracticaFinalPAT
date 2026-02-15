@@ -1,6 +1,7 @@
 package edu.comillas.icai.gitt.pat.spring.mvc.records;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
@@ -17,7 +18,7 @@ public record Usuario(
         String password,
         @NotBlank(message = "El telefono no puede estar vacío")
         String telefono,
-        @NotBlank(message = "El rol no puede estar vacío")
+        @NotNull(message = "El objeto Rol no puede ser nulo")
         Rol rol,
         LocalDateTime fechaRegistro,
         boolean activo
