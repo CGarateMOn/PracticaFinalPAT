@@ -58,7 +58,7 @@ public class PistaController {
 
         if (result.hasErrors()) {
             result.getFieldErrors().forEach(error ->
-                    logger.warn("se ha intentado crear una pista con datos invalidos" + result.getAllErrors());
+                    logger.warn("se ha intentado crear una pista con datos invalidos" + result.getAllErrors()));
                     return ResponseEntity.badRequest().build();
         }
 
