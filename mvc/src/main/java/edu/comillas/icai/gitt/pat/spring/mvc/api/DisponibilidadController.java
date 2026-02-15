@@ -36,7 +36,13 @@ public class DisponibilidadController {
 
         logger.info("Consulta disponibilidad fecha {} courtId {}", localDate, courtId);
 
-        return ResponseEntity.ok(List.of());
+        Disponibilidad disponibilidad = new Disponibilidad(
+                courtId,
+                localDate,
+                List.of()
+        );
+
+        return ResponseEntity.ok(disponibilidad);
     }
 
 }
