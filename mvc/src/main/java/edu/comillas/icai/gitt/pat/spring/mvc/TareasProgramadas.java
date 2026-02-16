@@ -1,5 +1,6 @@
 package edu.comillas.icai.gitt.pat.spring.mvc;
 
+import edu.comillas.icai.gitt.pat.spring.mvc.api.DisponibilidadController;
 import edu.comillas.icai.gitt.pat.spring.mvc.api.ReservasController;
 import edu.comillas.icai.gitt.pat.spring.mvc.api.UsuarioController;
 import edu.comillas.icai.gitt.pat.spring.mvc.records.Usuario;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 
 @Service //@Component sirve para que Spring registre la clase, vea que tiene métodos programados y
-// activa el reloj interno para ejecutarlos cuando corresponda. ta,bien sepuede poner @Service hace
+// activa el reloj interno para ejecutarlos cuando corresponda. tambien sepuede poner @Service hace
 // lo mismo pero además indica que la clase contiene lógica de negocio
 public class TareasProgramadas {
 
@@ -36,6 +37,33 @@ public class TareasProgramadas {
                             "Hola " + usuario.nombre() + ", te recordamos tu reserva de hoy.");
                 }
              */
+            }
+        });
+    }
+    // Información de pistas el día 1 de cada mes a las 09:00 AM, se puede cambiar la hora si se quiere.
+    @Scheduled(cron = "0 0 9 1 * *")
+    public void mandarInfoMensualPistas() {
+        // Construimos un resumen de la disponibilidad actual del mapa
+        StringBuilder resumenDisponibilidad = new StringBuilder();
+        resumenDisponibilidad.append("Horarios destacados para hoy:\n");
+
+        DisponibilidadController.mapaDisponibilidad.values().forEach(disp -> {
+            resumenDisponibilidad.append("- Pista: ").append(disp.idPista()).append("\n");
+            disp.tramosHorariosDisponibles().forEach(tramo -> {
+                if (tramo.disponible()) {
+                    resumenDisponibilidad.append("  * ").append(tramo.inicio()).append(" a ").append(tramo.fin()).append("\n");
+                }
+            });
+        });
+        // Enviamos a todos los usuarios registrados
+        UsuarioController.usuarios.values().forEach(usuario -> {
+            if (usuario.activo()) {
+                String cuerpoMensaje = "Hola " + usuario.nombre() + ",\n\n" +
+                        "Te enviamos la disponibilidad de pistas para iniciar el mes:\n\n" +
+                        resumenDisponibilidad.toString() +
+                        "\nReserva ya en nuestra App.";
+
+                logger.info("PARA: {}", usuario);
             }
         });
     }
