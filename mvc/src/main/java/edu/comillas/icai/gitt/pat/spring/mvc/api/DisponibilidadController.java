@@ -1,18 +1,37 @@
 package edu.comillas.icai.gitt.pat.spring.mvc.api;
 
 import edu.comillas.icai.gitt.pat.spring.mvc.records.Disponibilidad;
+import edu.comillas.icai.gitt.pat.spring.mvc.records.TramosHorarios;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/pistaPadel")
 public class DisponibilidadController {
+
+    public static final Map<String, Disponibilidad> mapaDisponibilidad = new HashMap<>();
+
+    static {
+        List<TramosHorarios> tramos = List.of(
+            new TramosHorarios(LocalTime.of(9, 0), LocalTime.of(10, 0), true),
+            new TramosHorarios(LocalTime.of(10, 0), LocalTime.of(11, 0), true),
+            new TramosHorarios(LocalTime.of(18, 0), LocalTime.of(19, 0), true)
+        );
+        // Inicializamos datos para hoy
+        LocalDate hoy = LocalDate.now();
+        mapaDisponibilidad.put("Pista1-" + hoy, new Disponibilidad("Pista1", hoy, tramos));
+        mapaDisponibilidad.put("Pista2-" + hoy, new Disponibilidad("Pista2", hoy, tramos));
+    }
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @GetMapping("/availability")
@@ -70,7 +89,6 @@ public class DisponibilidadController {
         Disponibilidad disponibilidad = new Disponibilidad(courtId, localDate, List.of());
         return ResponseEntity.ok(disponibilidad);
     }
-
 
 }
 

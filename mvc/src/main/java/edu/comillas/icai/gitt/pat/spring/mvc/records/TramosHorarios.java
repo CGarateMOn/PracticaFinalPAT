@@ -4,6 +4,7 @@ import java.time.LocalTime;
 
 public record TramosHorarios(
         LocalTime inicio,
-        LocalTime fin
+        LocalTime fin,
+        boolean disponible
 )
 {}
