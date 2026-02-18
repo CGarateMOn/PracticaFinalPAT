@@ -2,14 +2,18 @@ package edu.comillas.icai.gitt.pat.spring.mvc.api;
 
 import edu.comillas.icai.gitt.pat.spring.mvc.records.Disponibilidad;
 import edu.comillas.icai.gitt.pat.spring.mvc.data.AlmacenDatos;
+import edu.comillas.icai.gitt.pat.spring.mvc.records.TramosHorarios;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static org.springframework.http.ResponseEntity.ok;
@@ -17,6 +21,7 @@ import static org.springframework.http.ResponseEntity.ok;
 @RestController
 @RequestMapping("/pistaPadel")
 public class DisponibilidadController {
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @GetMapping("/availability")
@@ -75,7 +80,6 @@ public class DisponibilidadController {
         Disponibilidad disponibilidad = new Disponibilidad(courtId, localDate, List.of());
         return ResponseEntity.ok(disponibilidad);
     }
-
 
 }
 
