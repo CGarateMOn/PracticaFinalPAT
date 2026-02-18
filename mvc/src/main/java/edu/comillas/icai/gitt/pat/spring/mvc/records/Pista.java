@@ -17,6 +17,5 @@ public record Pista(
         @Positive(message = "El precio hora debe ser mayor a cero")
         Double precioHora,
         boolean activa,
-
         LocalDateTime fechaAlta
 ) {}
