@@ -1,6 +1,7 @@
 package edu.comillas.icai.gitt.pat.spring.mvc.api;
 
 import edu.comillas.icai.gitt.pat.spring.mvc.records.Disponibilidad;
+import edu.comillas.icai.gitt.pat.spring.mvc.data.AlmacenDatos;
 import edu.comillas.icai.gitt.pat.spring.mvc.records.TramosHorarios;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,9 @@ import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.Collections.emptyList;
+import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequestMapping("/pistaPadel")
@@ -36,15 +40,19 @@ public class DisponibilidadController {
             return ResponseEntity.badRequest().build(); // 400
         }
 
-        logger.info("Consulta disponibilidad fecha {} courtId {}", localDate, courtId);
+        List<Disponibilidad> result;
+        if (courtId != null) {
+            if (!AlmacenDatos.pistas.containsKey(courtId)) return ok(emptyList());
+            result = List.of(new Disponibilidad(courtId, localDate, List.of()));
+            // de momento ponemos List.of() porque todavia no tenemos los tramos de tiempo reales
+            // cuando implementemos la logica real pondremos el resultado de eso
+        } else {
+            result = AlmacenDatos.pistas.keySet().stream()
+                    .map(id -> new Disponibilidad(id, localDate, List.of()))
+                    .toList();
+        }
+        return ok(result);
 
-        Disponibilidad disponibilidad = new Disponibilidad(
-                courtId,
-                localDate,
-                List.of()
-        );
-
-        return ResponseEntity.ok(disponibilidad);
     }
 
     @GetMapping("/courts/{courtId}/availability")
@@ -63,10 +71,7 @@ public class DisponibilidadController {
             return ResponseEntity.badRequest().build();
         }
 
-        // ToDo: aquí más adelante irás a PistaRepository/Service para comprobar existencia real
-        boolean pistaExiste = true; // placeholder por ahora
-
-        if (!pistaExiste) {
+        if (!AlmacenDatos.pistas.containsKey(courtId)) {
             return ResponseEntity.notFound().build(); // 404
         }
 
