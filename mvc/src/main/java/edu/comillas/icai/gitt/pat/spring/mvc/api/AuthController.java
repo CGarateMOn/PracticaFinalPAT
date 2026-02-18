@@ -4,13 +4,16 @@ import edu.comillas.icai.gitt.pat.spring.mvc.records.ModeloUsuarioIncorrecto;
 import edu.comillas.icai.gitt.pat.spring.mvc.records.Rol;
 import edu.comillas.icai.gitt.pat.spring.mvc.records.Usuario;
 import jakarta.validation.Valid;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -42,11 +45,10 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errores);
         }
         // 2. Validación de email duplicado
-        boolean emailExiste = usuarios.values().stream()
-                .anyMatch(u -> u.email().equalsIgnoreCase(usuario.email()));
-
-        if(emailExiste){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("El email ya existe");
+        for(Usuario u : usuarios.values() ) {
+            if (u.email().equals(usuario.email())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("El email ya existe");
+            }
         }
         // 3. Creación del usuario forzando el Rol USER
         // Usamos los datos del 'usuario' recibido pero inyectamos el Rol manual
@@ -69,7 +71,21 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public Usuario login(@RequestBody  )
+    public ResponseEntity<Usuario> login() {
+        // Obtenemos el nombre del usuario que acaba de loguearse
+        String nombreUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        // Lo buscamos en nuestro mapa de datos
+        Usuario usuario = usuarios.get(nombreUsuario);
+
+        if (usuario != null) {
+            logger.info("Login exitoso para: {}", nombreUsuario);
+            return ResponseEntity.ok(usuario); // Retorna 200 OK y el usuario (como pide la foto)
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 401 si algo falla
+    }
+
 
 
 }
