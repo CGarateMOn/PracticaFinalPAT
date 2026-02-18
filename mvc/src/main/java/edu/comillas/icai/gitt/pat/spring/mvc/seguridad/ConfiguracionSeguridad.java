@@ -32,7 +32,8 @@ public class ConfiguracionSeguridad {
                         .requestMatchers("/pistaPadel/courts/*").permitAll()
                         .requestMatchers("/pistaPadel/availability").permitAll()
                         .requestMatchers("/pistaPadel/courts/*/availability").permitAll()
-                        
+                        .requestMatchers("/pistaPadel/health").permitAll()
+
                         .anyRequest().authenticated()
                 )
 //
