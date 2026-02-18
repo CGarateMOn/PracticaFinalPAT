@@ -19,14 +19,13 @@ public class ConfiguracionSeguridad {
     @Bean
     public SecurityFilterChain configuracion(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/pistaPadel/**")) // MUY IMPORTANTE: debe coincidir con tu ruta
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/pistaPadel/**", "/reservations/**"))
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/pistaPadel/availability").permitAll()
-                        .requestMatchers("/pistaPadel/courts").permitAll()
+                        .requestMatchers("/pistaPadel/availability", "/pistaPadel/courts").permitAll()
                         .anyRequest().authenticated()
                 )
-                .httpBasic(Customizer.withDefaults()); // Esto es lo que usa Postman
+                .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }
