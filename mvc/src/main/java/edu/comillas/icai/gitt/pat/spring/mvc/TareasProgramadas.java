@@ -24,7 +24,7 @@ public class TareasProgramadas {
         // Recorremos el mapa de reservas
         AlmacenDatos.reservas.values().forEach(reserva -> {
             // Comprobamos si la reserva es para hoy
-            if (reserva.fechaReserva().equals(hoy)) {
+            if (reserva.fechaReserva().toLocalDate().equals(hoy)) {
                 // Obtenemos el ID del usuario de esa reserva
                 String idUsuario = reserva.idUsuario();
                 // Buscamos al usuario en el mapa de UsuarioController para obtener el email
