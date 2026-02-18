@@ -23,9 +23,8 @@ public class ConfiguracionSeguridad {
         http
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/pistaPadel/**", "/reservations/**"))
                 .authorizeHttpRequests((authorize) -> authorize
-
-                        // -------- AUTH --------
-                        .requestMatchers("/pistaPadel/auth/**").permitAll()
+                        .requestMatchers("/pistaPadel/auth/register").permitAll()
+                        .requestMatchers("/pistaPadel/auth/login", "/pistaPadel/auth/me").authenticated()
 
                         // -------- PUBLICOS --------
                         .requestMatchers("/pistaPadel/courts").permitAll()
@@ -35,15 +34,15 @@ public class ConfiguracionSeguridad {
                         
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form
-                        .loginProcessingUrl("/pistaPadel/auth/login")
-                        .successHandler((request, response, authentication) -> {
-                            response.setStatus(HttpServletResponse.SC_OK); // 200 ok
-                        })
-                        .failureHandler((request, response, exception) -> {
-                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 credenciales incorrectas
-                        })
-                )
+//                .formLogin(form -> form
+//                        .loginProcessingUrl("/pistaPadel/auth/login")
+//                        .successHandler((request, response, authentication) -> {
+//                            response.setStatus(HttpServletResponse.SC_OK); // 200 ok
+//                        })
+//                        .failureHandler((request, response, exception) -> {
+//                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 credenciales incorrectas
+//                        })
+//                )
                 // LOGOUT CONFIGURACION
                 .logout(logout -> logout
                         .logoutUrl("/pistaPadel/auth/logout")
