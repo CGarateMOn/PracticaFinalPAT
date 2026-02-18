@@ -45,13 +45,14 @@ public class AuthController {
             BindingResult result
     ){
         if(result.hasErrors()){
-            List<ModeloUsuarioIncorrecto> usuarioIncorrecto = new ArrayList<>();
-                for(FieldError error : result.getFieldErrors()){
-                    usuarioIncorrecto.add(new ModeloUsuarioIncorrecto(
-                    error.getDefaultMessage(),
-                    error.getField(),
-                    error.getRejectedValue()));
-            }
+            List<ModeloUsuarioIncorrecto> usuarioIncorrecto = result.getFieldErrors()
+                    .stream()
+                    .map(e -> new ModeloUsuarioIncorrecto(
+                            e.getDefaultMessage(),
+                            e.getField(),
+                            e.getRejectedValue()
+                    ))
+                    .toList();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(usuarioIncorrecto);
         }
         for(Usuario u : USUARIOS.values() ){
