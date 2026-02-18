@@ -24,7 +24,7 @@ public class TareasProgramadas {
         // Recorremos el mapa de reservas
         AlmacenDatos.reservas.values().forEach(reserva -> {
             // Comprobamos si la reserva es para hoy
-            if (reserva.fechaReserva().equals(hoy)) {
+            if (reserva.fechaReserva().toLocalDate().equals(hoy)) {
                 // Obtenemos el ID del usuario de esa reserva
                 String idUsuario = reserva.idUsuario();
                 // Buscamos al usuario en el mapa de UsuarioController para obtener el email
@@ -43,9 +43,11 @@ public class TareasProgramadas {
         AlmacenDatos.disponibilidad.values().forEach(disp -> {
             resumenDisponibilidad.append("- Pista: ").append(disp.idPista()).append("\n");
             disp.tramosHorariosDisponibles().forEach(tramo -> {
-                if (tramo.disponible()) {
-                    resumenDisponibilidad.append("  * ").append(tramo.inicio()).append(" a ").append(tramo.fin()).append("\n");
-                }
+                resumenDisponibilidad.append("  * ")
+                        .append(tramo.inicio())
+                        .append(" a ")
+                        .append(tramo.fin())
+                        .append("\n");
             });
         });
         // Enviamos a todos los usuarios registrados

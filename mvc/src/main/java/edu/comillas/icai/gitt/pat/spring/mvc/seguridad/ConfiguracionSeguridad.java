@@ -1,5 +1,8 @@
 package edu.comillas.icai.gitt.pat.spring.mvc.seguridad;
 
+import edu.comillas.icai.gitt.pat.spring.mvc.data.AlmacenDatos;
+import edu.comillas.icai.gitt.pat.spring.mvc.records.Usuario;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -19,33 +22,45 @@ public class ConfiguracionSeguridad {
     @Bean
     public SecurityFilterChain configuracion(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/pistaPadel/**")) // MUY IMPORTANTE: debe coincidir con tu ruta
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/pistaPadel/**", "/reservations/**"))
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/pistaPadel/availability").permitAll()
+                        .requestMatchers("/pistaPadel/auth/register").permitAll()
+                        .requestMatchers("/pistaPadel/auth/login", "/pistaPadel/auth/me").authenticated()
+
+                        // -------- PUBLICOS --------
                         .requestMatchers("/pistaPadel/courts").permitAll()
+                        .requestMatchers("/pistaPadel/courts/*").permitAll()
+                        .requestMatchers("/pistaPadel/availability").permitAll()
+                        .requestMatchers("/pistaPadel/courts/*/availability").permitAll()
+                        .requestMatchers("/pistaPadel/health").permitAll()
+
                         .anyRequest().authenticated()
                 )
-                .httpBasic(Customizer.withDefaults()); // Esto es lo que usa Postman
+//
+                // LOGOUT CONFIGURACION
+                .logout(logout -> logout
+                        .logoutUrl("/pistaPadel/auth/logout")
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setStatus(HttpServletResponse.SC_NO_CONTENT); // 204 ok
+                        })
+                )
+                .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }
     @Bean
     public UserDetailsService usuarios() {
-        // Usamos .builder() directamente para tener control total
-        UserDetails user = User.builder()
-                .username("user01")
-                .password("{noop}cifrado456") // El prefijo {noop} le dice a Spring: "no cifres esto"
-                .roles("USER")
+        return email -> {
+            Usuario u = AlmacenDatos.usuarios.values().stream()
+                .filter(user -> user.email().equals(email))
+                .findFirst()
+                .orElseThrow( ()-> new org.springframework.security.core.userdetails.UsernameNotFoundException("No existe"));
+        return User.withDefaultPasswordEncoder()
+                .username(u.email())
+                .password(u.password())
+                .roles(u.rol().nombreRol())
                 .build();
-
-        UserDetails admin = User.builder()
-                .username("admin01")
-                .password("{noop}cifrado123")
-                .roles("ADMIN")
-                .build();
-
-        return new InMemoryUserDetailsManager(admin, user);
+        };
     }
 }
 

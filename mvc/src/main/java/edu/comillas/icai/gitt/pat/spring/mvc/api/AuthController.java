@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,9 +25,10 @@ public class AuthController {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    //Registrar a un usuario con rol user por defecto
     @PostMapping("/register")
     public ResponseEntity<Object> register(
-            @Valid @RequestBody Usuario usuario,
+            @Valid @RequestBody Usuario usuario, //Comprobamos si falta algún campo
             BindingResult result
     ){
         // 1. Validación de anotaciones (@Valid)
@@ -41,15 +43,14 @@ public class AuthController {
                     .toList();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errores);
         }
-        // 2. Validación de email duplicado
-        boolean emailExiste = usuarios.values().stream()
-                .anyMatch(u -> u.email().equalsIgnoreCase(usuario.email()));
-
-        if(emailExiste){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("El email ya existe");
+        // comprobamos que el email no exista
+        for(Usuario u : usuarios.values() ) {
+            if (u.email().equals(usuario.email())) {
+                logger.warn("El email " + usuario.email() +" ya lo están utilizando");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("El email ya existe");
+            }
         }
-        // 3. Creación del usuario forzando el Rol USER
-        // Usamos los datos del 'usuario' recibido pero inyectamos el Rol manual
+        // CUANDO SE REGRISTRE ALGUIEN POR DEFECTO TIENE QUE SER USUARIO
         Usuario nuevoUsuario = new Usuario(
                 usuario.idUsuario(),
                 usuario.nombre(),
@@ -68,8 +69,36 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoUsuario);
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<Usuario> me(){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Usuario usuario = usuarios.values().stream()
+                .filter(u -> u.email().equals(email))
+                .findFirst()
+                .orElse(null);
+
+        if(usuario != null){
+            return ResponseEntity.ok(usuario);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+    }
+    //Es lo mismo pero diferentes endpoints
     @PostMapping("/login")
-    public Usuario login(@RequestBody  )
+    public ResponseEntity<Usuario> login(){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Usuario usuario = usuarios.values().stream()
+                .filter(u -> u.email().equals(email))
+                .findFirst()
+                .orElse(null);
+
+        if(usuario != null){
+            return ResponseEntity.ok(usuario);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+    }
+
 
 
 }
