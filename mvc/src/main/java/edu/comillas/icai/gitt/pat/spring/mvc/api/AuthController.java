@@ -14,12 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static edu.comillas.icai.gitt.pat.spring.mvc.data.AlmacenDatos.USUARIOS;
-
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import static edu.comillas.icai.gitt.pat.spring.mvc.data.AlmacenDatos.usuarios;
 
 @RestController
@@ -33,8 +29,9 @@ public class AuthController {
             @Valid @RequestBody Usuario usuario,
             BindingResult result
     ){
+        // 1. Validación de anotaciones (@Valid)
         if(result.hasErrors()){
-            List<ModeloUsuarioIncorrecto> usuarioIncorrecto = result.getFieldErrors()
+            List<ModeloUsuarioIncorrecto> errores = result.getFieldErrors()
                     .stream()
                     .map(e -> new ModeloUsuarioIncorrecto(
                             e.getDefaultMessage(),
@@ -42,38 +39,37 @@ public class AuthController {
                             e.getRejectedValue()
                     ))
                     .toList();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(usuarioIncorrecto);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errores);
         }
-        for(Usuario u : usuarios.values() ){
-            if(u.email().equals(usuario.email())){
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("El email ya existe");
-            }
-        }
+        // 2. Validación de email duplicado
+        boolean emailExiste = usuarios.values().stream()
+                .anyMatch(u -> u.email().equalsIgnoreCase(usuario.email()));
 
-        Usuario usuario1 = new Usuario(
+        if(emailExiste){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("El email ya existe");
+        }
+        // 3. Creación del usuario forzando el Rol USER
+        // Usamos los datos del 'usuario' recibido pero inyectamos el Rol manual
+        Usuario nuevoUsuario = new Usuario(
                 usuario.idUsuario(),
                 usuario.nombre(),
                 usuario.apellidos(),
                 usuario.email(),
                 usuario.password(),
                 usuario.telefono(),
-                new Rol("1", "USER", "Rol por defecto"),
+                new Rol("1", "USER", "Rol por defecto"), // <--- Forzamos USER
                 LocalDateTime.now(),
                 true
         );
-        logger.info("Gracias "+ usuario.nombre()+ " tu cuenta se ha creado correctamente");
-        USUARIOS.put(usuario1.idUsuario(), usuario1);
-        return ResponseEntity.status(HttpStatus.CREATED).body(usuario1);
-        logger.info("Gracias", usuario.nombre(), "tu cuenta se ha creado correctamente");
-        usuarios.put(usuario.idUsuario(), usuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(usuario);
+        // 4. Guardar y responder
+        usuarios.put(nuevoUsuario.idUsuario(), nuevoUsuario);
+        logger.info("Gracias {}, tu cuenta se ha creado correctamente", nuevoUsuario.nombre());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoUsuario);
     }
 
     @PostMapping("/login")
     public Usuario login(@RequestBody  )
-
-
-
 
 
 }
