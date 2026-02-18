@@ -1,6 +1,7 @@
 package edu.comillas.icai.gitt.pat.spring.mvc.seguridad;
 
 import edu.comillas.icai.gitt.pat.spring.mvc.data.AlmacenDatos;
+import edu.comillas.icai.gitt.pat.spring.mvc.records.Usuario;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,9 +24,8 @@ public class ConfiguracionSeguridad {
         http
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/pistaPadel/**", "/reservations/**"))
                 .authorizeHttpRequests((authorize) -> authorize
-
-                        // -------- AUTH --------
-                        .requestMatchers("/pistaPadel/auth/**").permitAll()
+                        .requestMatchers("/pistaPadel/auth/register").permitAll()
+                        .requestMatchers("/pistaPadel/auth/login", "/pistaPadel/auth/me").authenticated()
 
                         // -------- PUBLICOS --------
                         .requestMatchers("/pistaPadel/courts").permitAll()
@@ -35,15 +35,7 @@ public class ConfiguracionSeguridad {
                         
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form
-                        .loginProcessingUrl("/pistaPadel/auth/login")
-                        .successHandler((request, response, authentication) -> {
-                            response.setStatus(HttpServletResponse.SC_OK); // 200 ok
-                        })
-                        .failureHandler((request, response, exception) -> {
-                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 credenciales incorrectas
-                        })
-                )
+//
                 // LOGOUT CONFIGURACION
                 .logout(logout -> logout
                         .logoutUrl("/pistaPadel/auth/logout")
@@ -51,19 +43,15 @@ public class ConfiguracionSeguridad {
                             response.setStatus(HttpServletResponse.SC_NO_CONTENT); // 204 ok
                         })
                 )
-                .httpBasic(Customizer.withDefaults()); // Esto es lo que usa Postman
-//                        .requestMatchers("/auth/**").permitAll()
-//                        .requestMatchers("/pistaPadel/availability", "/pistaPadel/courts").permitAll()
-//                        .anyRequest().authenticated()
-                
+                .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }
     @Bean
     public UserDetailsService usuarios() {
-        return username -> {
-        edu.comillas.icai.gitt.pat.spring.mvc.records.Usuario u = AlmacenDatos.usuarios.values().stream()
-                .filter(user -> user.email().equals(username))
+        return email -> {
+            Usuario u = AlmacenDatos.usuarios.values().stream()
+                .filter(user -> user.email().equals(email))
                 .findFirst()
                 .orElseThrow( ()-> new org.springframework.security.core.userdetails.UsernameNotFoundException("No existe"));
         return User.withDefaultPasswordEncoder()
