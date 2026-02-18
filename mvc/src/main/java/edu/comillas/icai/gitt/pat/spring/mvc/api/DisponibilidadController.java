@@ -11,11 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static java.util.Collections.emptyList;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
@@ -28,15 +25,15 @@ public class DisponibilidadController {
     private static final LocalTime HORA_CIERRE = LocalTime.of(22, 0);
 
     private static final TramosHorarios TRAMO_COMPLETO = new TramosHorarios(HORA_APERTURA, HORA_CIERRE);
+
     @GetMapping("/availability")
     public ResponseEntity<?> getAvailabilityByDate(
             @RequestParam(name = "date", required = false) String date,
             @RequestParam(name = "courtId", required = false) String courtId)
     {
         if (date == null || date.isBlank()) {
-            return ResponseEntity.badRequest().build(); // 400
+            return ResponseEntity.badRequest().build(); // 404
         }
-
         final LocalDate localDate;
         try {
             localDate = LocalDate.parse(date); // espera YYYY-MM-DD
@@ -44,26 +41,28 @@ public class DisponibilidadController {
             return ResponseEntity.badRequest().build(); // 400
         }
 
-        List<Disponibilidad> result;
-        if (courtId != null) {
-            if (!AlmacenDatos.pistas.containsKey(courtId)) return ok(emptyList());
-            result = List.of(new Disponibilidad(courtId, localDate, List.of()));
-            // de momento ponemos List.of() porque todavia no tenemos los tramos de tiempo reales
-            // cuando implementemos la logica real pondremos el resultado de eso
-        } else {
-            result = AlmacenDatos.pistas.keySet().stream()
-                    .map(id -> new Disponibilidad(id, localDate, List.of()))
-                    .toList();
+        // Si viene courtId: devolvemos lista de 1 si existe; si no existe -> lista vacía (200)
+        if (courtId != null && !courtId.isBlank()) {
+            if (!AlmacenDatos.pistas.containsKey(courtId)) {
+                return ResponseEntity.ok(List.of());
+            }
+            Disponibilidad d = new Disponibilidad(courtId, localDate, List.of(TRAMO_COMPLETO));
+            return ResponseEntity.ok(List.of(d));
         }
-        return ok(result);
 
+        // Si NO viene courtId: devolvemos disponibilidad para todas las pistas
+        List<Disponibilidad> result = AlmacenDatos.pistas.keySet().stream()
+                .map(id -> new Disponibilidad(id, localDate, List.of(TRAMO_COMPLETO)))
+                .toList();
+
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/courts/{courtId}/availability")
     public ResponseEntity<?> getCourtAvailability(
             @PathVariable String courtId,
-            @RequestParam(name = "date", required = false) String date
-    ) {
+            @RequestParam(name = "date", required = false) String date)
+        {
         if (date == null || date.isBlank()) {
             return ResponseEntity.badRequest().build();
         }
@@ -81,7 +80,7 @@ public class DisponibilidadController {
 
         logger.info("Disponibilidad pista {} fecha {}", courtId, localDate);
 
-        Disponibilidad disponibilidad = new Disponibilidad(courtId, localDate, List.of());
+        Disponibilidad disponibilidad = new Disponibilidad(courtId, localDate, List.of(TRAMO_COMPLETO));
         return ResponseEntity.ok(disponibilidad);
     }
 
