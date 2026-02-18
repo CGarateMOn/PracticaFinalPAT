@@ -22,9 +22,16 @@ public class ConfiguracionSeguridad {
         http
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/pistaPadel/**", "/reservations/**"))
                 .authorizeHttpRequests((authorize) -> authorize
+
+                        // -------- AUTH --------
                         .requestMatchers("/pistaPadel/auth/**").permitAll()
-                        .requestMatchers("/pistaPadel/availability").permitAll()
+
+                        // -------- PUBLICOS --------
                         .requestMatchers("/pistaPadel/courts").permitAll()
+                        .requestMatchers("/pistaPadel/courts/*").permitAll()
+                        .requestMatchers("/pistaPadel/availability").permitAll()
+                        .requestMatchers("/pistaPadel/courts/*/availability").permitAll()
+                        
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
