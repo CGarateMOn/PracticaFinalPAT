@@ -71,13 +71,20 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<Usuario> me(){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        Usuario usuario = usuarios.get(email);
+        Usuario usuario = usuarios.values().stream()
+                .filter(u -> u.email().equals(email))
+                .findFirst()
+                .orElse(null);
 
         if(usuario != null){
             return ResponseEntity.ok(usuario);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
+    }
+    @PostMapping("/login")
+    public ResponseEntity<Usuario> login(){
+        return me();
     }
 
 
