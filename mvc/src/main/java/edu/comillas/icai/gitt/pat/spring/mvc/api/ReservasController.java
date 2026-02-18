@@ -1,7 +1,5 @@
 package edu.comillas.icai.gitt.pat.spring.mvc.api;
 
-import edu.comillas.icai.gitt.pat.spring.mvc.data.AlmacenDatos;
-import edu.comillas.icai.gitt.pat.spring.mvc.records.Pista;
 import edu.comillas.icai.gitt.pat.spring.mvc.records.Reserva;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -17,6 +15,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
+import static edu.comillas.icai.gitt.pat.spring.mvc.data.AlmacenDatos.pistas;
+import static edu.comillas.icai.gitt.pat.spring.mvc.data.AlmacenDatos.reservas;
+
 @RestController
 @RequestMapping("/reservations") // Simplificado para que coincida con tus métodos
 public class ReservasController {
@@ -24,8 +25,6 @@ public class ReservasController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     // Usamos los mapas de AlmacenDatos para que sea persistente entre controladores
-    private final Map<String, Reserva> reservas = new HashMap<>();
-    private final Map<String, Pista> PISTAS = new HashMap<>();
 
     // 0. CREAR RESERVA
     @PostMapping
@@ -34,7 +33,7 @@ public class ReservasController {
             @Valid @RequestBody Reserva nuevaReserva,
             Authentication authentication
     ) {
-        if (!PISTAS.containsKey(nuevaReserva.idPista())) {
+        if (!pistas.containsKey(nuevaReserva.idPista())) {
             logger.warn("Pista no encontrada: {}", nuevaReserva.idPista());
             return ResponseEntity.notFound().build();
         }
@@ -155,7 +154,7 @@ public class ReservasController {
         int nuevaDuracion = (datosActualizar.duracionMinutos() > 0) ? datosActualizar.duracionMinutos() : actual.duracionMinutos();
         LocalTime nuevaHoraFin = nuevaHoraInicio.plusMinutes(nuevaDuracion);
 
-        if (!PISTAS.containsKey(nuevaPista)) return ResponseEntity.notFound().build();
+        if (!pistas.containsKey(nuevaPista)) return ResponseEntity.notFound().build();
 
         for (Reserva r : reservas.values()) {
             if (r.estado() && r.idPista().equals(nuevaPista)
