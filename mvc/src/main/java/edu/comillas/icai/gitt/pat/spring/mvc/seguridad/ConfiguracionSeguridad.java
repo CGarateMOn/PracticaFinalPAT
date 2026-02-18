@@ -44,11 +44,10 @@ public class ConfiguracionSeguridad {
                         })
                 )
                 .httpBasic(Customizer.withDefaults()); // Esto es lo que usa Postman
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/pistaPadel/availability", "/pistaPadel/courts").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .httpBasic(Customizer.withDefaults());
+//                        .requestMatchers("/auth/**").permitAll()
+//                        .requestMatchers("/pistaPadel/availability", "/pistaPadel/courts").permitAll()
+//                        .anyRequest().authenticated()
+                
 
         return http.build();
     }
