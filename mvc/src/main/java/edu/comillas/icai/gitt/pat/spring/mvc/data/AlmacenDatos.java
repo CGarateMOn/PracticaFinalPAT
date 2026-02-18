@@ -37,9 +37,9 @@ public class AlmacenDatos {
         // INICIALIZAR DISPONIBILIDAD (Asociada a las pistas creadas)
         LocalDate hoy = LocalDate.now();
         List<TramosHorarios> tramosEstandar = List.of(
-                new TramosHorarios(LocalTime.of(9, 0), LocalTime.of(10, 0), true),
-                new TramosHorarios(LocalTime.of(10, 0), LocalTime.of(11, 0), true),
-                new TramosHorarios(LocalTime.of(18, 0), LocalTime.of(19, 0), true)
+                new TramosHorarios(LocalTime.of(9, 0), LocalTime.of(10, 0)),
+                new TramosHorarios(LocalTime.of(10, 0), LocalTime.of(11, 0)),
+                new TramosHorarios(LocalTime.of(18, 0), LocalTime.of(19, 0))
         );
 
         disponibilidad.put("1-" + hoy, new Disponibilidad("1", hoy, tramosEstandar));
