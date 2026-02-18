@@ -1,5 +1,6 @@
 package edu.comillas.icai.gitt.pat.spring.mvc.seguridad;
 
+import edu.comillas.icai.gitt.pat.spring.mvc.data.AlmacenDatos;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,7 +44,7 @@ public class ConfiguracionSeguridad {
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 credenciales incorrectas
                         })
                 )
-                // LOGOUT CONFIGURADO SEGÚN LA TABLA
+                // LOGOUT CONFIGURACION
                 .logout(logout -> logout
                         .logoutUrl("/pistaPadel/auth/logout")
                         .logoutSuccessHandler((request, response, authentication) -> {
@@ -60,20 +61,17 @@ public class ConfiguracionSeguridad {
     }
     @Bean
     public UserDetailsService usuarios() {
-        // Usamos .builder() directamente para tener control total
-        UserDetails user = User.builder()
-                .username("user01")
-                .password("{noop}cifrado456") // El prefijo {noop} le dice a Spring: "no cifres esto"
-                .roles("USER")
+        return username -> {
+        edu.comillas.icai.gitt.pat.spring.mvc.records.Usuario u = AlmacenDatos.usuarios.values().stream()
+                .filter(user -> user.email().equals(username))
+                .findFirst()
+                .orElseThrow( ()-> new org.springframework.security.core.userdetails.UsernameNotFoundException("No existe"));
+        return User.withDefaultPasswordEncoder()
+                .username(u.email())
+                .password(u.password())
+                .roles(u.rol().nombreRol())
                 .build();
-
-        UserDetails admin = User.builder()
-                .username("admin01")
-                .password("{noop}cifrado123")
-                .roles("ADMIN")
-                .build();
-
-        return new InMemoryUserDetailsManager(admin, user);
+        };
     }
 }
 
