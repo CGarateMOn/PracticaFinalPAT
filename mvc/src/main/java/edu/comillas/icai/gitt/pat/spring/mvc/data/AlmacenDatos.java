@@ -54,18 +54,18 @@ public class AlmacenDatos {
         LocalDate mañana = hoy.plusDays(1);
 
         List<TramosHorarios> tramosManana = List.of(
-                new TramosHorarios(LocalTime.of(8, 0), LocalTime.of(9, 30), true),
-                new TramosHorarios(LocalTime.of(9, 30), LocalTime.of(11, 0), true),
-                new TramosHorarios(LocalTime.of(11, 0), LocalTime.of(12, 30), true),
-                new TramosHorarios(LocalTime.of(12, 30), LocalTime.of(14, 0), true)
+                new TramosHorarios(LocalTime.of(8, 0), LocalTime.of(9, 30)),
+                new TramosHorarios(LocalTime.of(9, 30), LocalTime.of(11, 0)),
+                new TramosHorarios(LocalTime.of(11, 0), LocalTime.of(12, 30)),
+                new TramosHorarios(LocalTime.of(12, 30), LocalTime.of(14, 0))
         );
 
         List<TramosHorarios> tramosTardeNoche = List.of(
-                new TramosHorarios(LocalTime.of(15, 30), LocalTime.of(17, 0), true),
-                new TramosHorarios(LocalTime.of(17, 0), LocalTime.of(18, 30), true),
-                new TramosHorarios(LocalTime.of(18, 30), LocalTime.of(20, 0), true),
-                new TramosHorarios(LocalTime.of(20, 0), LocalTime.of(21, 30), true),
-                new TramosHorarios(LocalTime.of(21, 30), LocalTime.of(23, 0), true)
+                new TramosHorarios(LocalTime.of(15, 30), LocalTime.of(17, 0)),
+                new TramosHorarios(LocalTime.of(17, 0), LocalTime.of(18, 30)),
+                new TramosHorarios(LocalTime.of(18, 30), LocalTime.of(20, 0)),
+                new TramosHorarios(LocalTime.of(20, 0), LocalTime.of(21, 30)),
+                new TramosHorarios(LocalTime.of(21, 30), LocalTime.of(23, 0))
         );
         // Disponibilidad para Pista 1 y 2 hoy y mañana
         disponibilidad.put("1-" + hoy, new Disponibilidad("1", hoy, tramosManana));
