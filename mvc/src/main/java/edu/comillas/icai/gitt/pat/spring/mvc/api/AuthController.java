@@ -4,7 +4,6 @@ import edu.comillas.icai.gitt.pat.spring.mvc.records.ModeloUsuarioIncorrecto;
 import edu.comillas.icai.gitt.pat.spring.mvc.records.Rol;
 import edu.comillas.icai.gitt.pat.spring.mvc.records.Usuario;
 import jakarta.validation.Valid;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -13,7 +12,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,7 +27,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<Object> register(
-            @Valid @RequestBody Usuario usuario,
+            @Valid @RequestBody Usuario usuario, //Comprobamos si falta algún campo
             BindingResult result
     ){
         // 1. Validación de anotaciones (@Valid)
@@ -44,15 +42,14 @@ public class AuthController {
                     .toList();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errores);
         }
-        // 2. Validación de email duplicado
+        // ANALIZAMOS SI EL EMAIL YA EXISTE
         for(Usuario u : usuarios.values() ) {
             if (u.email().equals(usuario.email())) {
                 logger.warn("El email " + usuario.email() +" ya lo están utilizando");
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("El email ya existe");
             }
         }
-        // 3. Creación del usuario forzando el Rol USER
-        // Usamos los datos del 'usuario' recibido pero inyectamos el Rol manual
+        // CUANDO SE REGRISTRE ALGUIEN POR DEFECTO TIENE QUE SER USUARIO
         Usuario nuevoUsuario = new Usuario(
                 usuario.idUsuario(),
                 usuario.nombre(),
@@ -71,26 +68,10 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoUsuario);
     }
 
-//    @PostMapping("/login")
-//    public ResponseEntity<Usuario> login() {
-//        // Obtenemos el nombre del usuario que acaba de loguearse
-//        String nombreUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
-//
-//        // Lo buscamos en nuestro mapa de datos
-//        Usuario usuario = usuarios.get(nombreUsuario);
-//
-//        if (usuario != null) {
-//            logger.info("Login exitoso para: {}", nombreUsuario);
-//            return ResponseEntity.ok(usuario); // Retorna 200 OK y el usuario (como pide la foto)
-//        }
-//
-//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 401 si algo falla
-//    }
-
     @GetMapping("/me")
     public ResponseEntity<Usuario> me(){
-        String nombre = SecurityContextHolder.getContext().getAuthentication().getName();
-        Usuario usuario = usuarios.get(nombre);
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Usuario usuario = usuarios.get(email);
 
         if(usuario != null){
             return ResponseEntity.ok(usuario);
