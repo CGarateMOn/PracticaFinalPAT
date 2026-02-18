@@ -21,9 +21,13 @@ import static org.springframework.http.ResponseEntity.ok;
 @RestController
 @RequestMapping("/pistaPadel")
 public class DisponibilidadController {
-
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    // Horario del club (temporal hardcodeado)
+    private static final LocalTime HORA_APERTURA = LocalTime.of(9, 0);
+    private static final LocalTime HORA_CIERRE = LocalTime.of(22, 0);
+
+    private static final TramosHorarios TRAMO_COMPLETO = new TramosHorarios(HORA_APERTURA, HORA_CIERRE);
     @GetMapping("/availability")
     public ResponseEntity<?> getAvailabilityByDate(
             @RequestParam(name = "date", required = false) String date,
