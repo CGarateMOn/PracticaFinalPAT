@@ -25,7 +25,7 @@ public class PistaController {
     @GetMapping("/courts")
     public ResponseEntity<List<Pista>> listarPistas(@RequestParam(required = false) Boolean active) {
         logger.trace("se han listado las pistas, según la solicitud haya sido courts?active=true/false debe haber obtenido las pistas active o inactive ");
-        List<Pista> pistas = new ArrayList<>(AlmacenDatos.PISTAS.values());
+        List<Pista> pistas = new ArrayList<>(AlmacenDatos.pistas.values());
         return ResponseEntity.ok(pistas);
     }
 

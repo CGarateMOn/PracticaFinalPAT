@@ -16,19 +16,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static edu.comillas.icai.gitt.pat.spring.mvc.data.AlmacenDatos.usuarios;
+
 @RestController
 @RequestMapping("/pistaPadel/users")
 public class UsuarioController {
-    public static final Map<String, Usuario> usuarios = new HashMap<>();
-
-    static {
-        Rol rolAdmin = new Rol("1", "ADMIN", "Administrador");
-        Rol rolUser = new Rol("2", "USER", "Usuario estándar");
-
-        usuarios.put("admin01", new Usuario("admin01", "Ana", "García", "admin@padel.com", "cifrado123", "600111222", rolAdmin, LocalDateTime.now(), true));
-        usuarios.put("user01", new Usuario("user01", "Juan", "Pérez", "juan@gmail.com", "cifrado456", "611222333", rolUser, LocalDateTime.now(), true));
-    }
-
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @GetMapping

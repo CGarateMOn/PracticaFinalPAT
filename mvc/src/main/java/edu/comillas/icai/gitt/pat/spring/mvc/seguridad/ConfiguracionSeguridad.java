@@ -1,5 +1,6 @@
 package edu.comillas.icai.gitt.pat.spring.mvc.seguridad;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -19,14 +20,41 @@ public class ConfiguracionSeguridad {
     @Bean
     public SecurityFilterChain configuracion(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/pistaPadel/**")) // MUY IMPORTANTE: debe coincidir con tu ruta
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/pistaPadel/**", "/reservations/**"))
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/pistaPadel/availability").permitAll()
+
+                        // -------- AUTH --------
+                        .requestMatchers("/pistaPadel/auth/**").permitAll()
+
+                        // -------- PUBLICOS --------
                         .requestMatchers("/pistaPadel/courts").permitAll()
+                        .requestMatchers("/pistaPadel/courts/*").permitAll()
+                        .requestMatchers("/pistaPadel/availability").permitAll()
+                        .requestMatchers("/pistaPadel/courts/*/availability").permitAll()
+                        
                         .anyRequest().authenticated()
                 )
+                .formLogin(form -> form
+                        .loginProcessingUrl("/pistaPadel/auth/login")
+                        .successHandler((request, response, authentication) -> {
+                            response.setStatus(HttpServletResponse.SC_OK); // 200 ok
+                        })
+                        .failureHandler((request, response, exception) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401 credenciales incorrectas
+                        })
+                )
+                // LOGOUT CONFIGURADO SEGÚN LA TABLA
+                .logout(logout -> logout
+                        .logoutUrl("/pistaPadel/auth/logout")
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setStatus(HttpServletResponse.SC_NO_CONTENT); // 204 ok
+                        })
+                )
                 .httpBasic(Customizer.withDefaults()); // Esto es lo que usa Postman
+//                        .requestMatchers("/auth/**").permitAll()
+//                        .requestMatchers("/pistaPadel/availability", "/pistaPadel/courts").permitAll()
+//                        .anyRequest().authenticated()
+                
 
         return http.build();
     }

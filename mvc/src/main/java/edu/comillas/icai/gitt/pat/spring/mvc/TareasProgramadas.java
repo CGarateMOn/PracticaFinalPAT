@@ -1,8 +1,6 @@
 package edu.comillas.icai.gitt.pat.spring.mvc;
 
-import edu.comillas.icai.gitt.pat.spring.mvc.api.DisponibilidadController;
-import edu.comillas.icai.gitt.pat.spring.mvc.api.ReservasController;
-import edu.comillas.icai.gitt.pat.spring.mvc.api.UsuarioController;
+import edu.comillas.icai.gitt.pat.spring.mvc.data.AlmacenDatos;
 import edu.comillas.icai.gitt.pat.spring.mvc.records.Usuario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,13 +22,13 @@ public class TareasProgramadas {
         LocalDate hoy = LocalDate.now();
         logger.info("Iniciando envío de recordatorios (2:00 AM) para el día: {}", hoy);
         // Recorremos el mapa de reservas
-        ReservasController.reservas.values().forEach(reserva -> {
+        AlmacenDatos.reservas.values().forEach(reserva -> {
             // Comprobamos si la reserva es para hoy
-            if (reserva.fechaReserva().equals(hoy)) {
+            if (reserva.fechaReserva().toLocalDate().equals(hoy)) {
                 // Obtenemos el ID del usuario de esa reserva
                 String idUsuario = reserva.idUsuario();
                 // Buscamos al usuario en el mapa de UsuarioController para obtener el email
-                Usuario usuario = UsuarioController.usuarios.get(idUsuario);
+                Usuario usuario = AlmacenDatos.usuarios.get(idUsuario);
                 /* RELLENAR CON LÓGICA DE ENVIAR CORREOS Y NO SOLO UN MENSJE EN LA TERMINAL
                 if (usuario != null) {
                     enviarEmail(usuario.email(), "Recordatorio de Pista",
@@ -47,22 +45,23 @@ public class TareasProgramadas {
         StringBuilder resumenDisponibilidad = new StringBuilder();
         resumenDisponibilidad.append("Horarios destacados para hoy:\n");
 
-        DisponibilidadController.mapaDisponibilidad.values().forEach(disp -> {
+        AlmacenDatos.disponibilidad.values().forEach(disp -> {
             resumenDisponibilidad.append("- Pista: ").append(disp.idPista()).append("\n");
             disp.tramosHorariosDisponibles().forEach(tramo -> {
-                if (tramo.disponible()) {
-                    resumenDisponibilidad.append("  * ").append(tramo.inicio()).append(" a ").append(tramo.fin()).append("\n");
-                }
+                resumenDisponibilidad.append("  * ")
+                        .append(tramo.inicio())
+                        .append(" a ")
+                        .append(tramo.fin())
+                        .append("\n");
             });
         });
         // Enviamos a todos los usuarios registrados
-        UsuarioController.usuarios.values().forEach(usuario -> {
+        AlmacenDatos.usuarios.values().forEach(usuario -> {
             if (usuario.activo()) {
                 String cuerpoMensaje = "Hola " + usuario.nombre() + ",\n\n" +
                         "Te enviamos la disponibilidad de pistas para iniciar el mes:\n\n" +
                         resumenDisponibilidad.toString() +
                         "\nReserva ya en nuestra App.";
-
                 logger.info("PARA: {}", usuario);
             }
         });
