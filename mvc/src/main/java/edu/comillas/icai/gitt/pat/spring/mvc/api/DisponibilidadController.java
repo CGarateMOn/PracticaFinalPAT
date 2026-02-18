@@ -42,16 +42,16 @@ public class DisponibilidadController {
 
         List<Disponibilidad> result;
         if (courtId != null) {
-            if (!AlmacenDatos.PISTAS.containsKey(courtId)) return ok(emptyList());
+            if (!AlmacenDatos.pistas.containsKey(courtId)) return ok(emptyList());
             result = List.of(new Disponibilidad(courtId, localDate, List.of()));
             // de momento ponemos List.of() porque todavia no tenemos los tramos de tiempo reales
             // cuando implementemos la logica real pondremos el resultado de eso
         } else {
-            result = AlmacenDatos.PISTAS.keySet().stream()
+            result = AlmacenDatos.pistas.keySet().stream()
                     .map(id -> new Disponibilidad(id, localDate, List.of()))
                     .toList();
         }
-        return ResponseEntity.ok(result);
+        return ok(result);
 
     }
 
@@ -71,7 +71,7 @@ public class DisponibilidadController {
             return ResponseEntity.badRequest().build();
         }
 
-        if (!AlmacenDatos.PISTAS.containsKey(courtId)) {
+        if (!AlmacenDatos.pistas.containsKey(courtId)) {
             return ResponseEntity.notFound().build(); // 404
         }
 
