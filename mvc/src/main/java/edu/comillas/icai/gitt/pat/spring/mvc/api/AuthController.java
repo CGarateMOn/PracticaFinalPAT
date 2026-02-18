@@ -16,21 +16,17 @@ import java.util.List;
 
 import static edu.comillas.icai.gitt.pat.spring.mvc.data.AlmacenDatos.USUARIOS;
 
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import static edu.comillas.icai.gitt.pat.spring.mvc.data.AlmacenDatos.usuarios;
+
 @RestController
 @RequestMapping("/pistaPadel/auth")
 public class AuthController {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-
-
-
-//    @ExceptionHandler(ExcepcionUsuarioIncorrecto.class)
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    public List<ModeloUsuarioIncorrecto> usuarioIncorrecto(ExcepcionUsuarioIncorrecto ex) {
-//        return ex.getErrores().stream().map(error -> new ModeloUsuarioIncorrecto(
-//                error.getDefaultMessage(), error.getField(), error.getRejectedValue()
-//        )).toList();
-//    }
 
     @PostMapping("/register")
     public ResponseEntity<Object> register(
@@ -48,7 +44,7 @@ public class AuthController {
                     .toList();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(usuarioIncorrecto);
         }
-        for(Usuario u : USUARIOS.values() ){
+        for(Usuario u : usuarios.values() ){
             if(u.email().equals(usuario.email())){
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("El email ya existe");
             }
@@ -68,6 +64,9 @@ public class AuthController {
         logger.info("Gracias "+ usuario.nombre()+ " tu cuenta se ha creado correctamente");
         USUARIOS.put(usuario1.idUsuario(), usuario1);
         return ResponseEntity.status(HttpStatus.CREATED).body(usuario1);
+        logger.info("Gracias", usuario.nombre(), "tu cuenta se ha creado correctamente");
+        usuarios.put(usuario.idUsuario(), usuario);
+        return ResponseEntity.status(HttpStatus.CREATED).body(usuario);
     }
 
     @PostMapping("/login")

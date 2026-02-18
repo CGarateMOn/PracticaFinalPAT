@@ -8,7 +8,7 @@ public record Reserva(
         String idReserva,
         String idUsuario,
         String idPista,
-        LocalDate fechaReserva,
+        LocalDateTime fechaReserva,
         LocalTime horaInicio,
         int duracionMinutos,
         LocalTime horaFin,

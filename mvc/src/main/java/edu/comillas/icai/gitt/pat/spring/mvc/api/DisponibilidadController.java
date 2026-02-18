@@ -18,20 +18,6 @@ import java.util.Map;
 @RequestMapping("/pistaPadel")
 public class DisponibilidadController {
 
-    public static final Map<String, Disponibilidad> mapaDisponibilidad = new HashMap<>();
-
-    static {
-        List<TramosHorarios> tramos = List.of(
-            new TramosHorarios(LocalTime.of(9, 0), LocalTime.of(10, 0), true),
-            new TramosHorarios(LocalTime.of(10, 0), LocalTime.of(11, 0), true),
-            new TramosHorarios(LocalTime.of(18, 0), LocalTime.of(19, 0), true)
-        );
-        // Inicializamos datos para hoy
-        LocalDate hoy = LocalDate.now();
-        mapaDisponibilidad.put("Pista1-" + hoy, new Disponibilidad("Pista1", hoy, tramos));
-        mapaDisponibilidad.put("Pista2-" + hoy, new Disponibilidad("Pista2", hoy, tramos));
-    }
-
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @GetMapping("/availability")
