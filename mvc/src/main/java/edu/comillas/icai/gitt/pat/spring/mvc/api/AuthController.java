@@ -25,6 +25,7 @@ public class AuthController {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    //Registrar a un usuario con rol user por defecto
     @PostMapping("/register")
     public ResponseEntity<Object> register(
             @Valid @RequestBody Usuario usuario, //Comprobamos si falta algún campo
@@ -42,7 +43,7 @@ public class AuthController {
                     .toList();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errores);
         }
-        // ANALIZAMOS SI EL EMAIL YA EXISTE
+        // comprobamos que el email no exista
         for(Usuario u : usuarios.values() ) {
             if (u.email().equals(usuario.email())) {
                 logger.warn("El email " + usuario.email() +" ya lo están utilizando");
