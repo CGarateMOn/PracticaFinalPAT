@@ -1,12 +1,23 @@
 package edu.comillas.icai.gitt.pat.spring.mvc.api;
 
+import edu.comillas.icai.gitt.pat.spring.mvc.data.AlmacenDatos;
+import edu.comillas.icai.gitt.pat.spring.mvc.records.Pista;
 import edu.comillas.icai.gitt.pat.spring.mvc.records.Reserva;
-import org.springframework.web.bind.annotation.RequestMapping;
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.*;
 
-@RequestMapping("/pistaPadel")
+@RestController
+@RequestMapping("/reservations") // Simplificado para que coincida con tus métodos
 public class ReservasController {
-    public static final Map<String, Reserva> reservas = new HashMap<>(); //para poder acceder a los mails y enviar recordatorios
 }
