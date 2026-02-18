@@ -22,7 +22,7 @@ public class PistaController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     // 1. LISTAR PISTAS (GET /pistaPadel/courts)
-    @GetMapping("/courts")
+    @GetMapping("")
     public ResponseEntity<List<Pista>> listarPistas(@RequestParam(required = false) Boolean active) {
         logger.trace("se han listado las pistas, según la solicitud haya sido courts?active=true/false debe haber obtenido las pistas active o inactive ");
         List<Pista> pistas = new ArrayList<>(AlmacenDatos.pistas.values());
