@@ -28,6 +28,15 @@ Sus funciones clave son:
 - Validación: Comprueba que los datos recibidos sean correctos (@Valid) y bloquea cambios accidentales de ID.
 - Trazabilidad: Registra en el log tanto las acciones exitosas como los errores de validación.
 
+# Seguridad
+## ConfiguraciónSeguridad
+Configura quién puede entrar y qué puede hacer cada usuario.
+- Reglas de Acceso: Define qué rutas son públicas (ver pistas, disponibilidad, registro) y cuáles requieren estar logueado (reservas, gestión de usuarios).
+- Gestión de Sesión: Configura el login mediante autenticación básica (httpBasic) y un proceso de logout personalizado que devuelve un código 204 No Content.
+- Usuarios Dinámicos: El método UserDetailsService conecta Spring Security con tu AlmacenDatos. Permite que los usuarios registrados en tu mapa estático puedan loguearse usando su email como nombre de usuario.
+- Flexibilidad: Desactiva la protección CSRF para las rutas de la API, facilitando las pruebas desde herramientas como Postman.
+- Seguridad por Anotaciones: Al usar @EnableMethodSecurity, permite que funcionen los @PreAuthorize que vimos en los otros controladores.
+
 # Data
 ## Almacén Datos
 Es un almacén de datos en memoria que simula una base de datos mediante mapas estáticos (ConcurrentHashMap).
