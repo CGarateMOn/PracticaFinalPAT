@@ -48,9 +48,11 @@ public class TareasProgramadas {
         AlmacenDatos.disponibilidad.values().forEach(disp -> {
             resumenDisponibilidad.append("- Pista: ").append(disp.idPista()).append("\n");
             disp.tramosHorariosDisponibles().forEach(tramo -> {
-                if (tramo.disponible()) {
-                    resumenDisponibilidad.append("  * ").append(tramo.inicio()).append(" a ").append(tramo.fin()).append("\n");
-                }
+                resumenDisponibilidad.append("  * ")
+                        .append(tramo.inicio())
+                        .append(" a ")
+                        .append(tramo.fin())
+                        .append("\n");
             });
         });
         // Enviamos a todos los usuarios registrados
