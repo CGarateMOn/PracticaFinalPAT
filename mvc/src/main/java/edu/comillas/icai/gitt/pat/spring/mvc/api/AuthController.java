@@ -47,6 +47,7 @@ public class AuthController {
         // 2. Validación de email duplicado
         for(Usuario u : usuarios.values() ) {
             if (u.email().equals(usuario.email())) {
+                logger.warn("El email " + usuario.email() +" ya lo están utilizando");
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("El email ya existe");
             }
         }
@@ -70,20 +71,32 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoUsuario);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<Usuario> login() {
-        // Obtenemos el nombre del usuario que acaba de loguearse
-        String nombreUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+//    @PostMapping("/login")
+//    public ResponseEntity<Usuario> login() {
+//        // Obtenemos el nombre del usuario que acaba de loguearse
+//        String nombreUsuario = SecurityContextHolder.getContext().getAuthentication().getName();
+//
+//        // Lo buscamos en nuestro mapa de datos
+//        Usuario usuario = usuarios.get(nombreUsuario);
+//
+//        if (usuario != null) {
+//            logger.info("Login exitoso para: {}", nombreUsuario);
+//            return ResponseEntity.ok(usuario); // Retorna 200 OK y el usuario (como pide la foto)
+//        }
+//
+//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 401 si algo falla
+//    }
 
-        // Lo buscamos en nuestro mapa de datos
-        Usuario usuario = usuarios.get(nombreUsuario);
+    @GetMapping("/me")
+    public ResponseEntity<Usuario> me(){
+        String nombre = SecurityContextHolder.getContext().getAuthentication().getName();
+        Usuario usuario = usuarios.get(nombre);
 
-        if (usuario != null) {
-            logger.info("Login exitoso para: {}", nombreUsuario);
-            return ResponseEntity.ok(usuario); // Retorna 200 OK y el usuario (como pide la foto)
+        if(usuario != null){
+            return ResponseEntity.ok(usuario);
         }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 401 si algo falla
     }
 
 
