@@ -29,13 +29,12 @@ Sus funciones clave son:
 - Trazabilidad: Registra en el log tanto las acciones exitosas como los errores de validación.
 
 # Data
-## Alamcén Datos
+## Almacén Datos
 Es un almacén de datos en memoria que simula una base de datos mediante mapas estáticos (ConcurrentHashMap).
-Propósito: Centralizar y precargar información de prueba (Semillas/Seeds).
-Contenido: Define roles (Admin/User), usuarios, pistas, horarios disponibles y reservas activas.
-Seguridad: Usa colecciones concurrentes para evitar errores si varios usuarios acceden a la vez.
-
-Acceso: No se puede instanciar (constructor privado); se accede a los datos de forma directa y global.
+- Propósito: Centralizar y precargar información de prueba (Semillas/Seeds).
+- Contenido: Define roles (Admin/User), usuarios, pistas, horarios disponibles y reservas activas.
+- Seguridad: Usa colecciones concurrentes para evitar errores si varios usuarios acceden a la vez.
+- Acceso: No se puede instanciar (constructor privado); se accede a los datos de forma directa y global.
 # Tareas Programadas
 Esta clase TareasProgramadas es un servicio de automatización de Spring que ejecuta procesos en segundo plano de forma periódica sin intervención humana.
 Es un @Service que utiliza @Scheduled con expresiones Cron para disparar tareas en momentos específicos.
