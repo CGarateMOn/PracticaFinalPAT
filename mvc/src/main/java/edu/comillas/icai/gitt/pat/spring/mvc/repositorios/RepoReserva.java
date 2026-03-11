@@ -9,7 +9,7 @@ import org.springframework.data.repository.CrudRepository;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface RepoReserva extends CrudRepository<Reserva, Integer> {
+public interface RepoReserva extends CrudRepository<Reserva, Long> {
     // GET /reservations → mis reservas (USER), con filtro opcional de fechas
     List<Reserva> findByUsuario(Usuario usuario);
     List<Reserva> findByUsuarioAndFechaReservaBetween(Usuario usuario, LocalDate from, LocalDate to);

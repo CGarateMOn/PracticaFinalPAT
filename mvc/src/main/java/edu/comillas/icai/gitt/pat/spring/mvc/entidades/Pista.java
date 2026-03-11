@@ -38,8 +38,15 @@ public class Pista {
     @OneToMany(mappedBy = "pista")
     private List<Reserva> reservas = new ArrayList<>();
 
-    protected void Pista() {
-        this.fechaAlta = LocalDate.now();
+   Pista() {
+       this.fechaAlta = LocalDate.now();
+    }
+    Pista(String nombre, String ubicacion, BigDecimal precioHora, Boolean activa) {
+       this.nombre = nombre;
+       this.ubicacion = ubicacion;
+       this.precioHora = precioHora;
+       this.activa = activa;
+       this.fechaAlta = LocalDate.now();
     }
 
 }
