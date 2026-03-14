@@ -1,7 +1,6 @@
 package edu.comillas.icai.gitt.pat.spring.mvc;
 
 import edu.comillas.icai.gitt.pat.spring.mvc.data.AlmacenDatos;
-import edu.comillas.icai.gitt.pat.spring.mvc.records.Usuario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -29,12 +28,7 @@ public class TareasProgramadas {
                 String idUsuario = reserva.idUsuario();
                 // Buscamos al usuario en el mapa de UsuarioController para obtener el email
                 Usuario usuario = AlmacenDatos.usuarios.get(idUsuario);
-                /* RELLENAR CON LÓGICA DE ENVIAR CORREOS Y NO SOLO UN MENSJE EN LA TERMINAL
-                if (usuario != null) {
-                    enviarEmail(usuario.email(), "Recordatorio de Pista",
-                            "Hola " + usuario.nombre() + ", te recordamos tu reserva de hoy.");
-                }
-             */
+                // RELLENAR CON LÓGICA DE ENVIAR CORREOS Y NO SOLO UN MENSJE EN LA TERMINAL
             }
         });
     }
