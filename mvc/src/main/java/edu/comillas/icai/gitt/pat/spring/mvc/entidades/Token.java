@@ -9,5 +9,5 @@ public class Token {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID) public String id;
 
-    @OneToOne @OnDelete(action = OnDeleteAction.CASCADE) public Usuario Usuario;
+    @OneToOne @OnDelete(action = OnDeleteAction.CASCADE) public Usuario usuario;
 }

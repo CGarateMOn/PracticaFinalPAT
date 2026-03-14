@@ -1,5 +1,6 @@
 package edu.comillas.icai.gitt.pat.spring.mvc.entidades;
 
+import edu.comillas.icai.gitt.pat.spring.mvc.modelos.Rol;
 import jakarta.persistence.*;
 import lombok.Data;
 
