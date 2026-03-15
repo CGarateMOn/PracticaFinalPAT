@@ -10,17 +10,21 @@ import edu.comillas.icai.gitt.pat.spring.mvc.repositorios.RepoUsuarios;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class AuthService {
     @Autowired
     RepoUsuarios repoUsuario;
     @Autowired
     RepoToken repoToken;
+    @Autowired
+    Hashing hashing;
 
     public ProfileResponse registrarUsuario(RegisterRequest register){
         Usuario usuario = new Usuario();
         usuario.setEmail(register.email());
-        usuario.setPassword(register.password());
+        usuario.setPassword(hashing.hash(register.password()));
         usuario.setNombre(register.nombre());
         usuario.setApellidos(register.apellidos());
         usuario.setTelefono(register.telefono());
@@ -33,11 +37,25 @@ public class AuthService {
         Usuario usuario = repoUsuario.findByEmail(email);
         if(usuario == null) return null;
 
+        if(!hashing.compare(password, usuario.getPassword())) return null;
+
         Token token = repoToken.findByUsuario(usuario);
         if(token != null) return token;
 
         token = new Token();
         token.usuario= usuario;
         return repoToken.save(token);
+    }
+
+    public Usuario authentication(String tokenId){
+        Optional<Token> token = repoToken.findById(tokenId);
+        return token.map(value-> value.usuario).orElse(null);
+    }
+
+    public void logout(String tokenId){
+        Optional<Token> token = repoToken.findById(tokenId);
+        if(token.isPresent()){
+            repoToken.deleteById(tokenId);
+        }
     }
 }

@@ -45,7 +45,17 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<Usuario> me(){
+    public ResponseEntity<ProfileResponse> me(@CookieValue(value = "session", required = true) String session){
+        if(session==null){
+            throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No autenticado");
+        }
+
+        Usuario usuario = authService.authentication(session);
+        if(usuario == null){
+            throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token no válido");
+        }
+
+        return  ResponseEntity.ok(ProfileResponse.fromUsuario(usuario));
     }
 
     @PostMapping("/login")
@@ -63,6 +73,26 @@ public class AuthController {
                 .build();
         return  ResponseEntity.status(HttpStatus.CREATED).header(HttpHeaders.SET_COOKIE, session.toString()).build();
 
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@CookieValue(value = "session", required = true) String session){
+        if(session == null){
+            throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No autenticado");
+        }
+        Usuario usuario = authService.authentication(session);
+        if(usuario == null){
+            throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+        authService.logout(session);
+        ResponseCookie expireSession = ResponseCookie
+                .from("session")
+                .httpOnly(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Strict")
+                .build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).header(HttpHeaders.SET_COOKIE, expireSession.toString()).build();
     }
 
 
