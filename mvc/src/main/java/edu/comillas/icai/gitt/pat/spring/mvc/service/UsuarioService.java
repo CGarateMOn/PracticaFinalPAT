@@ -1,13 +1,14 @@
 package edu.comillas.icai.gitt.pat.spring.mvc.service;
 
-import edu.comillas.icai.gitt.pat.spring.mvc.entidades.Rol;
+import edu.comillas.icai.gitt.pat.spring.mvc.entidades.Token;
+import edu.comillas.icai.gitt.pat.spring.mvc.modelos.Rol;
 import edu.comillas.icai.gitt.pat.spring.mvc.entidades.Usuario;
 import edu.comillas.icai.gitt.pat.spring.mvc.repositorios.RepoPistas;
 import edu.comillas.icai.gitt.pat.spring.mvc.repositorios.RepoReserva;
+import edu.comillas.icai.gitt.pat.spring.mvc.repositorios.RepoToken;
 import edu.comillas.icai.gitt.pat.spring.mvc.repositorios.RepoUsuarios;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -21,6 +22,8 @@ public class UsuarioService {
     private RepoReserva reservaRepo;
     @Autowired
     private RepoUsuarios usuarioRepo;
+    @Autowired
+    private RepoToken tokenRepo;
 
     public Usuario Autentica(String password) {
         Optional<Usuario> usuario = usuarioRepo.findByPassword(password);
@@ -40,4 +43,5 @@ public class UsuarioService {
         }
         return usuario.get();
     }
+
 }

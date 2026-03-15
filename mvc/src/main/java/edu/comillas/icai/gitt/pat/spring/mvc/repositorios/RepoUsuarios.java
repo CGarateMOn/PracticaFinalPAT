@@ -16,4 +16,6 @@ public interface RepoUsuarios extends CrudRepository<Usuario, Long> {
 
     // GET /users → listar todos
     List<Usuario> findAll();
+
+    Usuario findByEmail(String email);
 }

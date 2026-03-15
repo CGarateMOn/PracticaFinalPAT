@@ -10,12 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
-import java.util.Comparator;
-import java.util.List;
-
-import static edu.comillas.icai.gitt.pat.spring.mvc.data.AlmacenDatos.reservas;
 
 @RestController
 @RequestMapping("/pistaPadel/admin")
