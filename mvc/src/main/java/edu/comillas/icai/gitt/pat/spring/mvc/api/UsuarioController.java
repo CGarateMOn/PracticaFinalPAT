@@ -1,5 +1,6 @@
 package edu.comillas.icai.gitt.pat.spring.mvc.api;
 
+import edu.comillas.icai.gitt.pat.spring.mvc.entidades.Usuario;
 import edu.comillas.icai.gitt.pat.spring.mvc.service.PistaService;
 import edu.comillas.icai.gitt.pat.spring.mvc.service.ReservaService;
 import edu.comillas.icai.gitt.pat.spring.mvc.service.UsuarioService;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static edu.comillas.icai.gitt.pat.spring.mvc.data.AlmacenDatos.usuarios;
 
 @RestController
 @RequestMapping("/pistaPadel/users")

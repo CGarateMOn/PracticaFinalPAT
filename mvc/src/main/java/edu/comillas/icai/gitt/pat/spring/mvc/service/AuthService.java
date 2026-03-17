@@ -24,8 +24,8 @@ public class AuthService {
     RepoUsuarios repoUsuario;
     @Autowired
     RepoToken repoToken;
-    @Autowired
-    Hashing hashing;
+    //@Autowired
+    //Hashing hashing;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -36,7 +36,7 @@ public class AuthService {
         }
         Usuario usuario = new Usuario();
         usuario.setEmail(register.email());
-        usuario.setPassword(hashing.hash(register.password()));
+        usuario.setPassword(register.password());
         usuario.setNombre(register.nombre());
         usuario.setApellidos(register.apellidos());
         usuario.setTelefono(register.telefono());
@@ -51,7 +51,7 @@ public class AuthService {
         Usuario usuario = repoUsuario.findByEmail(email);
         if(usuario == null) return null;
 
-        if(!hashing.compare(password, usuario.getPassword())) return null;
+       // if(!hashing.compare(password, usuario.getPassword())) return null;
 
         Token token = repoToken.findByUsuario(usuario);
         if(token != null) return token;
