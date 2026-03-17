@@ -26,8 +26,6 @@ public class ReservaService {
     private RepoPistas pistaRepo;
     @Autowired
     private RepoReserva reservaRepo;
-    @Autowired
-    private RepoUsuarios usuarioRepo;
 
     private static final LocalTime HORA_APERTURA = LocalTime.of(9, 0);
     private static final LocalTime HORA_CIERRE = LocalTime.of(22, 0);
@@ -44,7 +42,7 @@ public class ReservaService {
             List<TramosHorarios> huecos = calcularHuecosDisponibles(reservasActivas);
 
             resultado.add(new Disponibilidad(
-                    String.valueOf(pista.getIdPista()),
+                    pista.getIdPista(),
                     fecha,
                     huecos
             ));
@@ -68,7 +66,7 @@ public class ReservaService {
         List<TramosHorarios> huecos = calcularHuecosDisponibles(reservasActivas);
 
         return new Disponibilidad(
-                String.valueOf(pista.getIdPista()),
+                pista.getIdPista(),
                 fecha,
                 huecos
         );
