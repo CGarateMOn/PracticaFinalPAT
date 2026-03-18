@@ -9,6 +9,8 @@ import edu.comillas.icai.gitt.pat.spring.mvc.repositorios.RepoPistas;
 import edu.comillas.icai.gitt.pat.spring.mvc.repositorios.RepoReserva;
 import edu.comillas.icai.gitt.pat.spring.mvc.repositorios.RepoUsuarios;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,8 @@ import java.util.List;
 
 @Service
 public class ReservaService {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     @Autowired
     private RepoPistas pistaRepo;
     @Autowired
@@ -246,6 +250,31 @@ public class ReservaService {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes acceso a esta reserva");
             }
         }
+    // Este es el método que usa tu Tarea Programada a las 2:00 AM
+    @Transactional
+    public void enviarRecordatoriosDiarios() {
+        LocalDate hoy = LocalDate.now();
+
+        // 1. Buscamos SOLO las reservas de hoy que estén en estado ACTIVA
+        List<Reserva> reservasActivasDeHoy = reservaRepo.findByFechaReservaAndEstado(hoy, EstadoReserva.ACTIVA);
+
+        // 2. Recorremos la lista de reservas
+        for (Reserva reserva : reservasActivasDeHoy) {
+
+            // 3. Sacamos el usuario (funciona perfecto gracias al @Transactional)
+            Usuario usuario = reserva.getUsuario();
+
+            // 4. LÓGICA DE ENVIAR CORREOS
+            String cuerpoMensaje = "Hola " + usuario.getNombre() + ",\n\n" +
+                    "Te escribimos para recordarte que hoy tienes una reserva confirmada en nuestras pistas.\n" +
+                    "Hora de inicio: " + reserva.getHoraInicio() + "\n\n" +
+                    "¡Te esperamos!";
+
+            // Si tienes configurado JavaMailSender, aquí iría el código de envío real.
+            // Por ahora, lo dejamos en el logger como pide el ejercicio:
+            logger.info("Enviando recordatorio PARA: {} - MENSAJE: \n{}", usuario.getEmail(), cuerpoMensaje);
+        }
+    }
 
     }
 
