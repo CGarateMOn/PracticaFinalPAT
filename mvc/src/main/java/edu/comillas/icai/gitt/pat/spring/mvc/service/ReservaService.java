@@ -114,7 +114,9 @@ public class ReservaService {
     @Transactional
     public void enviarRecordatoriosDiarios() {
         LocalDate hoy = LocalDate.now();
-        List<Reserva> reservasDeHoy = reservaRepo.findByFechaReserva(hoy);
+        List<Reserva> reservasDeHoy = reservaRepo.findByFechaReservaAndEstado(hoy, EstadoReserva.ACTIVA);
+        //se pone para que encuentra las reservas de hoy y tener cuidado si se ha cancelado una o no y no mostrarlas.
+        // Solo las activas
 
         for (Reserva reserva : reservasDeHoy) {
             // Como estamos dentro del servicio y con @Transactional, esto funciona perfecto
