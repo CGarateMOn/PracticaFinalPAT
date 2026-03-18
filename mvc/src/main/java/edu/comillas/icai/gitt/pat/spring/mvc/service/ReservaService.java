@@ -3,11 +3,15 @@ package edu.comillas.icai.gitt.pat.spring.mvc.service;
 import edu.comillas.icai.gitt.pat.spring.mvc.entidades.EstadoReserva;
 import edu.comillas.icai.gitt.pat.spring.mvc.entidades.Pista;
 import edu.comillas.icai.gitt.pat.spring.mvc.entidades.Reserva;
+import edu.comillas.icai.gitt.pat.spring.mvc.entidades.Usuario;
 import edu.comillas.icai.gitt.pat.spring.mvc.records.Disponibilidad;
 import edu.comillas.icai.gitt.pat.spring.mvc.records.TramosHorarios;
 import edu.comillas.icai.gitt.pat.spring.mvc.repositorios.RepoPistas;
 import edu.comillas.icai.gitt.pat.spring.mvc.repositorios.RepoReserva;
 import edu.comillas.icai.gitt.pat.spring.mvc.repositorios.RepoUsuarios;
+import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -21,6 +25,8 @@ import java.util.List;
 
 @Service
 public class ReservaService {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private RepoPistas pistaRepo;
@@ -102,5 +108,20 @@ public class ReservaService {
         }
 
         return huecos;
+    }
+
+    // Este es el método que usa tu Tarea Programada
+    @Transactional
+    public void enviarRecordatoriosDiarios() {
+        LocalDate hoy = LocalDate.now();
+        List<Reserva> reservasDeHoy = reservaRepo.findByFechaReserva(hoy);
+
+        for (Reserva reserva : reservasDeHoy) {
+            // Como estamos dentro del servicio y con @Transactional, esto funciona perfecto
+            Usuario usuario = reserva.getUsuario();
+
+            // LÓGICA DE ENVIAR CORREOS
+            logger.info("Enviando correo de recordatorio a: {}", usuario.getEmail());
+        }
     }
 }
