@@ -34,8 +34,7 @@ public class ReservasController {
     public ResponseEntity<Reserva> crearReserva(
             @Valid @RequestBody Reserva nuevaReserva,
             Authentication authentication
-    ) {
-    }
+    ) { }
 
     // 1. LISTAR RESERVAS
     @GetMapping
@@ -43,18 +42,15 @@ public class ReservasController {
             @RequestParam(required = false) String from,
             @RequestParam(required = false) String to,
             Authentication authentication
-    ) {
-    }
+    ) { }
 
     // 2. OBTENER UNA RESERVA
     @GetMapping("/{reservationId}")
-    public ResponseEntity<Reserva> obtenerReserva(@PathVariable String reservationId, Authentication authentication) {
-    }
+    public ResponseEntity<Reserva> obtenerReserva(@PathVariable String reservationId, Authentication authentication) {}
 
     // 3. CANCELAR RESERVA
     @DeleteMapping("/{reservationId}")
-    public ResponseEntity<Void> cancelarReserva(@PathVariable String reservationId, Authentication authentication) {
-    }
+    public ResponseEntity<Void> cancelarReserva(@PathVariable String reservationId, Authentication authentication) { }
 
     // 4. MODIFICAR RESERVA
     @PatchMapping("/{reservationId}")
@@ -62,6 +58,5 @@ public class ReservasController {
             @PathVariable String reservationId,
             @RequestBody Reserva datosActualizar,
             Authentication authentication
-    ) {
-    }
+    ) {}
 }

@@ -1,10 +1,8 @@
 package edu.comillas.icai.gitt.pat.spring.mvc;
 
-import edu.comillas.icai.gitt.pat.spring.mvc.entidades.Usuario;
 import edu.comillas.icai.gitt.pat.spring.mvc.service.PistaService;
 import edu.comillas.icai.gitt.pat.spring.mvc.service.ReservaService;
 import edu.comillas.icai.gitt.pat.spring.mvc.service.UsuarioService;
-import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
