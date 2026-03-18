@@ -222,6 +222,7 @@ public class ReservaService {
         return resultado;
     }
 
+
     // Disponibilidad de una pista concreta para una fecha
     public Disponibilidad obtenerDisponibilidadPista(Long courtId, LocalDate fecha) {
         logger.info("Calculando disponibilidad para pista {} en fecha {}", courtId, fecha);
@@ -252,6 +253,38 @@ public class ReservaService {
                 fecha,
                 huecos
         );
+    }
+
+    public List<Reserva> listarReservasAdmin(LocalDate fecha, Long pistaId, Long usuarioId) {
+        logger.info("Listando reservas admin con filtros fecha={} pistaId={} usuarioId={}", fecha, pistaId, usuarioId);
+
+        List<Reserva> reservas = new ArrayList<>();
+        reservaRepo.findAll().forEach(reservas::add);
+
+        if (fecha != null) {
+            reservas.removeIf(reserva -> !reserva.getFechaReserva().equals(fecha));
+        }
+
+        if (pistaId != null) {
+            reservas.removeIf(reserva ->
+                    reserva.getPista() == null ||
+                            reserva.getPista().getIdPista() == null ||
+                            !reserva.getPista().getIdPista().equals(pistaId));
+        }
+
+        if (usuarioId != null) {
+            reservas.removeIf(reserva ->
+                    reserva.getUsuario() == null ||
+                            reserva.getUsuario().getIdUsuario() == null ||
+                            !reserva.getUsuario().getIdUsuario().equals(usuarioId));
+        }
+
+        reservas.sort(Comparator
+                .comparing(Reserva::getFechaReserva)
+                .thenComparing(Reserva::getHoraInicio));
+
+        logger.debug("Reservas admin encontradas tras aplicar filtros: {}", reservas.size());
+        return reservas;
     }
 
     private List<TramosHorarios> calcularHuecosDisponibles(List<Reserva> reservas) {
