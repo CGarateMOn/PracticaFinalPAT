@@ -1,6 +1,7 @@
 package edu.comillas.icai.gitt.pat.spring.mvc.api;
 
 import edu.comillas.icai.gitt.pat.spring.mvc.records.Disponibilidad;
+import edu.comillas.icai.gitt.pat.spring.mvc.service.DisponibilidadService;
 import edu.comillas.icai.gitt.pat.spring.mvc.service.PistaService;
 import edu.comillas.icai.gitt.pat.spring.mvc.service.ReservaService;
 import edu.comillas.icai.gitt.pat.spring.mvc.service.UsuarioService;
@@ -21,7 +22,7 @@ import java.util.List;
 public class DisponibilidadController {
 
     @Autowired
-    ReservaService reservaService;
+    DisponibilidadService disponibilidadService;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -43,12 +44,12 @@ public class DisponibilidadController {
                 Long idPista = Long.parseLong(courtId);
                 logger.debug("Consultando disponibilidad de pista concreta. idPista={} fecha={}", idPista, fecha);
 
-                Disponibilidad disponibilidad = reservaService.obtenerDisponibilidadPista(idPista, fecha);
+                Disponibilidad disponibilidad = disponibilidadService.obtenerDisponibilidadPista(idPista, fecha);
                 logger.info("Disponibilidad de pista {} calculada correctamente para fecha {}", idPista, fecha);
                 return ResponseEntity.ok(disponibilidad);
             }
             logger.debug("Consultando disponibilidad de todas las pistas para fecha={}", fecha);
-            List<Disponibilidad> disponibilidades = reservaService.obtenerDisponibilidadPorFecha(fecha);
+            List<Disponibilidad> disponibilidades = disponibilidadService.obtenerDisponibilidadPorFecha(fecha);
             logger.info("Disponibilidad general calculada correctamente para fecha {}", fecha);
             return ResponseEntity.ok(disponibilidades);
 
@@ -77,7 +78,7 @@ public class DisponibilidadController {
             Long idPista = Long.parseLong(courtId);
 
             logger.debug("Consultando disponibilidad de pista {} para fecha {}", idPista, fecha);
-            Disponibilidad disponibilidad = reservaService.obtenerDisponibilidadPista(idPista, fecha);
+            Disponibilidad disponibilidad = disponibilidadService.obtenerDisponibilidadPista(idPista, fecha);
             logger.info("Disponibilidad de pista {} calculada correctamente para fecha {}", idPista, fecha);
             return ResponseEntity.ok(disponibilidad);
 
