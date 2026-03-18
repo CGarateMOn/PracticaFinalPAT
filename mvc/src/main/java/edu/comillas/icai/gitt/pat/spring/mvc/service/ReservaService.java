@@ -191,70 +191,6 @@ public class ReservaService {
         return actualizada;
     }
 
-    // Disponibilidad de todas las pistas para una fecha
-    public List<Disponibilidad> obtenerDisponibilidadPorFecha(LocalDate fecha) {
-        logger.info("Calculando disponibilidad para todas las pistas en fecha {}", fecha);
-
-        List<Pista> pistasActivas = pistaRepo.findByActiva(true);
-        logger.debug("Número de pistas activas encontradas: {}", pistasActivas.size());
-
-        List<Disponibilidad> resultado = new ArrayList<>();
-
-        for (Pista pista : pistasActivas) {
-            logger.debug("Procesando pista {}", pista.getIdPista());
-
-            List<Reserva> reservasActivas = reservaRepo.findByPistaAndFechaReservaAndEstado(
-                    pista, fecha, EstadoReserva.ACTIVA
-            );
-
-            logger.debug("Reservas activas encontradas para pista {}: {}", pista.getIdPista(), reservasActivas.size());
-
-            List<TramosHorarios> huecos = calcularHuecosDisponibles(reservasActivas);
-
-            resultado.add(new Disponibilidad(
-                    pista.getIdPista(),
-                    fecha,
-                    huecos
-            ));
-        }
-
-        logger.info("Disponibilidad general calculada correctamente para fecha {}", fecha);
-        return resultado;
-    }
-
-
-    // Disponibilidad de una pista concreta para una fecha
-    public Disponibilidad obtenerDisponibilidadPista(Long courtId, LocalDate fecha) {
-        logger.info("Calculando disponibilidad para pista {} en fecha {}", courtId, fecha);
-
-        Pista pista = pistaRepo.findById(courtId)
-                .orElseThrow(() -> {
-                    logger.error("Pista no encontrada: {}", courtId);
-                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "Pista no encontrada");
-                });
-
-        if (!Boolean.TRUE.equals(pista.getActiva())) {
-            logger.error("Intento de consulta sobre pista inactiva: {}", courtId);
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "La pista no está activa");
-        }
-
-        List<Reserva> reservasActivas = reservaRepo.findByPistaAndFechaReservaAndEstado(
-                pista, fecha, EstadoReserva.ACTIVA
-        );
-
-        logger.debug("Reservas activas encontradas para pista {}: {}", courtId, reservasActivas.size());
-
-        List<TramosHorarios> huecos = calcularHuecosDisponibles(reservasActivas);
-
-        logger.info("Disponibilidad calculada correctamente para pista {} en fecha {}", courtId, fecha);
-
-        return new Disponibilidad(
-                pista.getIdPista(),
-                fecha,
-                huecos
-        );
-    }
-
     public List<Reserva> listarReservasAdmin(LocalDate fecha, Long pistaId, Long usuarioId) {
         logger.info("Listando reservas admin con filtros fecha={} pistaId={} usuarioId={}", fecha, pistaId, usuarioId);
 
@@ -287,39 +223,6 @@ public class ReservaService {
         return reservas;
     }
 
-    private List<TramosHorarios> calcularHuecosDisponibles(List<Reserva> reservas) {
-        logger.debug("Calculando huecos disponibles. Número de reservas: {}", reservas.size());
-
-        List<TramosHorarios> huecos = new ArrayList<>();
-
-        reservas.sort(Comparator.comparing(Reserva::getHoraInicio));
-
-        LocalTime cursor = HORA_APERTURA;
-
-        for (Reserva reserva : reservas) {
-            LocalTime inicioReserva = reserva.getHoraInicio();
-            LocalTime finReserva = reserva.getHoraFin();
-
-            logger.debug("Procesando reserva: inicio={} fin={}", inicioReserva, finReserva);
-
-            if (cursor.isBefore(inicioReserva)) {
-                logger.debug("Hueco encontrado: {} - {}", cursor, inicioReserva);
-                huecos.add(new TramosHorarios(cursor, inicioReserva));
-            }
-
-            if (cursor.isBefore(finReserva)) {
-                cursor = finReserva;
-            }
-        }
-
-        if (cursor.isBefore(HORA_CIERRE)) {
-            logger.debug("Hueco final encontrado: {} - {}", cursor, HORA_CIERRE);
-            huecos.add(new TramosHorarios(cursor, HORA_CIERRE));
-        }
-
-        logger.debug("Número total de huecos calculados: {}", huecos.size());
-        return huecos;
-    }
 
     // Comprobar que el JSON tenga los datos mínimos obligatorios
     private void validarDatosReserva(Reserva reserva) {
