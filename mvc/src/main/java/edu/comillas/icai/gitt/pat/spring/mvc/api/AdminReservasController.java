@@ -39,10 +39,6 @@ public class AdminReservasController {
         logger.info("GET /pistaPadel/admin/reservations - date={} courtId={} userId={}", date, courtId, userId);
 
         Usuario admin = authService.authentication(session);
-        if (admin == null) {
-            logger.error("Sesión no válida en consulta admin de reservas");
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No autenticado");
-        }
 
         if (admin.getRol() != Rol.ADMIN) {
             logger.error("Usuario {} sin permisos de admin intenta consultar reservas", admin.getIdUsuario());
