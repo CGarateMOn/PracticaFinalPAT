@@ -237,6 +237,10 @@ public class ReservaService {
         if (reserva.getDuracionMinutos() <= 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La duracion debe de ser mayor a 0");
         }
+
+        if (reserva.getDuracionMinutos() % 30 != 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La duración debe ser múltiplo de 30 minutos");
+        }
     }
 
     // Extrae el id de la pista del objeto recibido
@@ -249,11 +253,9 @@ public class ReservaService {
 
     // Valida que la hora esté dentro del horario del club
     private void validarHorario(LocalTime horaInicio, Integer duracionMinutos) {
-        LocalTime apertura = LocalTime.of(9, 0);
-        LocalTime cierre = LocalTime.of(22, 0);
         LocalTime horaFin = horaInicio.plusMinutes(duracionMinutos);
 
-        if (horaInicio.isBefore(apertura) || horaFin.isAfter(cierre) || !horaFin.isAfter(horaInicio)) {
+        if (horaInicio.isBefore(HORA_APERTURA) || horaFin.isAfter(HORA_CIERRE) || !horaFin.isAfter(horaInicio)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La reserva está fuera del horario permitido");
         }
     }
